@@ -5,6 +5,9 @@
   <div class="body">
     <slot name="body">Body of the cart</slot>
   </div>
+  <div class="footer">
+    <slot name="footer">Footer of the cart</slot>
+  </div>
 </div>
 
 <style lang="scss">
@@ -19,12 +22,17 @@
     overflow: hidden;
     .header {
       padding: 1em;
+      border-bottom: 1px solid var(--color-border);
     }
     .body {
       flex: 1;
-      border-top: 1px solid var(--color-border);
       position: relative;
       overflow: hidden;
+    }
+    .footer {
+      padding: 1em;
+      border-top: 1px solid var(--color-border);
+      position: relative;
     }
   }
 </style>

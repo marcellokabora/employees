@@ -1,100 +1,102 @@
 <script lang="ts">
-  import { fly } from "svelte/transition";
-  import { enhance } from "$app/forms";
   import Cart from "$lib/components/Cart.svelte";
+  import { onMount } from "svelte";
 
-  export let form;
-
-  let creating = false;
-
-  import { onMount, onDestroy } from "svelte";
-  let listElement: any;
-
-  let items: any[] = [];
-
-  for (let index = 0; index < 100; index++) {
-    items = [...items, `item ${index}`];
-  }
-
-  function loadMore() {
-    for (var index = 0; index < 100; index++) {
-      items = [...items, `item ${items.length}`];
-    }
-  }
+  let items: { id: number; status: boolean }[] = [];
+  let loading = false;
+  let pagination = 0;
+  let addMore: number;
+  let listEmployees: any;
 
   onMount(() => {
-    if (listElement) {
-      listElement.addEventListener("scroll", function () {
+    if (listEmployees) {
+      listEmployees.addEventListener("scroll", function () {
         if (
-          listElement.scrollTop + listElement.clientHeight >=
-          listElement.scrollHeight - 100
+          listEmployees.scrollTop + listEmployees.clientHeight >=
+          listEmployees.scrollHeight - 100
         ) {
-          loadMore();
+          pagination += 50;
         }
       });
     }
   });
 
-  onDestroy(() => {
-    if (listElement) listElement.removeEventListener("scroll");
-  });
+  function addEmployee() {
+    items = [];
+    listEmployees.scrollIntoView(0);
+    listEmployees.scrollTop = 0;
+    loading = true;
+    pagination = 50;
+    setTimeout(function () {
+      for (let index = 0; index < addMore; index++) {
+        items = [{ id: Date.now(), status: index % 2 == 0 }, ...items];
+      }
+      loading = false;
+    }, 2000);
+  }
 </script>
+
+<svelte:head>
+  <title>doinstruct</title>
+  <meta name="description" content="doinstruct Coding Aufgabe" />
+</svelte:head>
 
 <section>
   <Cart>
     <svelte:fragment slot="header">
-      <form
-        method="POST"
-        action="?/create"
-        use:enhance={() => {
-          creating = true;
-          return async ({ update }) => {
-            await update();
-            creating = false;
-          };
-        }}
-      >
+      <form on:submit|preventDefault={addEmployee}>
         <label>
           <span>Anzahl der Mitarbeiter die angelegt werden</span>
           <input
-            disabled={creating}
+            disabled={loading}
             name="description"
-            value={form?.description ?? ""}
+            bind:value={addMore}
             autocomplete="off"
             required
             placeholder=""
             type="number"
+            min="350"
           />
         </label>
         <button type="submit">Mitarbeiter anlegen</button>
       </form>
     </svelte:fragment>
     <svelte:fragment slot="body">
-      <div class="table">
-        <table bind:this={listElement}>
-          <thead>
-            <tr>
-              <td>Personalnummer</td>
-              <td>Vorname</td>
-              <td>Nachname</td>
-              <td>Aktiv</td>
-              <td>Erstellt</td>
+      <table bind:this={listEmployees}>
+        <thead>
+          <tr>
+            <td>Personalnummer</td>
+            <td>Vorname</td>
+            <td>Nachname</td>
+            <td>Aktiv</td>
+            <td>Erstellt</td>
+          </tr>
+        </thead>
+        <tbody>
+          {#each items.slice(0, pagination) as item, index}
+            <tr class:isodd={index % 2}>
+              <td>{index}</td>
+              <td>Abigayle</td>
+              <td>Mills</td>
+              <td>
+                <span class="status" class:active={item.status}
+                  >{item.status ? "Aktiv" : "Inaktiv"}</span
+                ></td
+              >
+              <td>August 7, 2017</td>
             </tr>
-          </thead>
-          <tbody>
-            {#each items as item, index}
-              <tr class:isodd={index % 2}>
-                <td>14924</td>
-                <td>Abigayle</td>
-                <td>Mills</td>
-                <td>Aktiv</td>
-                <td>August 7, 2017</td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-        <div class="footer">50 geladen von 350 Ergebnissen</div>
+          {/each}
+        </tbody>
+      </table>
+    </svelte:fragment>
+    <svelte:fragment slot="footer">
+      <div class="pagination">
+        {pagination < items.length ? pagination : items.length} geladen von {items.length}
+        Ergebnissen
       </div>
+      {#if loading}
+        <div class="loading">loading...</div>
+      {/if}
     </svelte:fragment>
   </Cart>
 </section>
@@ -123,18 +125,14 @@
         }
       }
     }
-    .table {
-      display: flex;
-      flex-direction: column;
-      position: absolute;
-      inset: 0;
-    }
     table {
       flex: 1;
       display: flex;
       flex-direction: column;
       border-collapse: collapse;
       overflow: auto;
+      position: absolute;
+      inset: 0;
       thead {
         position: sticky;
         top: 0;
@@ -153,12 +151,24 @@
         .isodd td {
           background-color: var(--bg-contrast-low);
         }
+        .status {
+          background-color: #d4d4d4;
+          padding: 4px 8px;
+          border-radius: 5px;
+          color: #6b716a;
+          font-weight: bold;
+          &.active {
+            background-color: #b4dfc4;
+            color: #18794e;
+          }
+        }
       }
       thead,
       tbody {
         tr {
           display: table;
           width: 100%;
+          border-bottom: 1px solid var(--color-border);
           td {
             padding: 1em 1em;
             width: 20%;
@@ -166,10 +176,15 @@
         }
       }
     }
-    .footer {
+    .loading {
+      position: absolute;
+      bottom: 0;
+      padding: 1em;
+      right: 0;
+    }
+    .pagination {
       color: gray;
       font-size: 0.8em;
-      padding: 1em;
     }
   }
 </style>

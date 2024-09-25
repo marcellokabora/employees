@@ -2,18 +2,29 @@
   import Cart from "$lib/components/Cart.svelte";
   import { onMount } from "svelte";
 
-  let items: { id: number; status: boolean }[] = [];
+  type Employe = { id: number; status: boolean };
+
+  let items: Employe[] = [];
+  let loaded: Employe[] = [];
   let loading = false;
   let pagination = 0;
   let addMore: number;
   let listEmployees: any;
+
+  $: if (items) {
+    loading = true;
+    setTimeout(function () {
+      loaded = items.slice(0, pagination);
+      loading = false;
+    }, 1000);
+  }
 
   onMount(() => {
     if (listEmployees) {
       listEmployees.addEventListener("scroll", function () {
         if (
           listEmployees.scrollTop + listEmployees.clientHeight >=
-          listEmployees.scrollHeight - 100
+          listEmployees.scrollHeight
         ) {
           pagination += 50;
         }
@@ -25,14 +36,12 @@
     items = [];
     listEmployees.scrollIntoView(0);
     listEmployees.scrollTop = 0;
-    loading = true;
     pagination = 50;
-    setTimeout(function () {
-      for (let index = 0; index < addMore; index++) {
-        items = [{ id: Date.now(), status: index % 2 == 0 }, ...items];
-      }
-      loading = false;
-    }, 2000);
+    let items1: Employe[] = [];
+    for (let index = 0; index < addMore; index++) {
+      items1 = [{ id: Date.now(), status: index % 2 == 0 }, ...items1];
+    }
+    items = items1;
   }
 </script>
 
@@ -73,7 +82,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each items.slice(0, pagination) as item, index}
+          {#each loaded as item, index}
             <tr class:isodd={index % 2}>
               <td>{index}</td>
               <td>Abigayle</td>
@@ -88,15 +97,22 @@
           {/each}
         </tbody>
       </table>
+      {#if loading}
+        <div class="imloading">
+          <img src="/loading.svg" alt="loading" />
+        </div>
+      {/if}
     </svelte:fragment>
     <svelte:fragment slot="footer">
-      <div class="pagination">
-        {pagination < items.length ? pagination : items.length} geladen von {items.length}
-        Ergebnissen
+      <div class="footer">
+        <span>
+          {pagination < items.length ? pagination : items.length} geladen von {items.length}
+          Ergebnissen
+        </span>
+        {#if loading}
+          <span>Loading...</span>
+        {/if}
       </div>
-      {#if loading}
-        <div class="loading">loading...</div>
-      {/if}
     </svelte:fragment>
   </Cart>
 </section>
@@ -176,13 +192,22 @@
         }
       }
     }
-    .loading {
+    .imloading {
       position: absolute;
-      bottom: 0;
-      padding: 1em;
-      right: 0;
+      inset: 0;
+      filter: opacity(0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: var(--bg-contrast-low);
+      img {
+        height: 50px;
+      }
     }
-    .pagination {
+    .footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       color: gray;
       font-size: 0.8em;
     }

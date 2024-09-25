@@ -122,7 +122,7 @@
     position: absolute;
     inset: 0;
     padding: 5em;
-    background-color: var(--bg-contrast-low);
+    background-color: var(--color-contrast);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -137,7 +137,7 @@
         span {
           padding-right: 1em;
           font-size: 0.8em;
-          color: gray;
+          color: var(--color-gray);
         }
       }
     }
@@ -152,11 +152,11 @@
       thead {
         position: sticky;
         top: 0;
-        background-color: var(--bg-secondary);
+        background-color: var(--color-secondary);
       }
       tbody {
         flex: 1;
-        color: gray;
+        color: var(--color-gray);
         tr {
           &:hover {
             td {
@@ -165,7 +165,7 @@
           }
         }
         .isodd td {
-          background-color: var(--bg-contrast-low);
+          background-color: var(--color-contrast);
         }
         .status {
           background-color: #d4d4d4;
@@ -173,6 +173,7 @@
           border-radius: 5px;
           color: #6b716a;
           font-weight: bold;
+          font-size: 0.8em;
           &.active {
             background-color: #b4dfc4;
             color: #18794e;
@@ -199,7 +200,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      background-color: var(--bg-contrast-low);
+      background-color: var(--color-contrast);
       img {
         height: 50px;
       }
@@ -208,7 +209,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: gray;
+      color: var(--color-gray);
       font-size: 0.8em;
     }
   }

@@ -1,19 +1,19 @@
 <div class="cart">
   <div class="header">
-    <slot name="header">Header of the cart</slot>
+    <slot name="header" />
   </div>
   <div class="body">
-    <slot name="body">Body of the cart</slot>
+    <slot name="body" />
   </div>
   <div class="footer">
-    <slot name="footer">Footer of the cart</slot>
+    <slot name="footer" />
   </div>
 </div>
 
 <style lang="scss">
   .cart {
-    background-color: var(--bg-secondary);
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2);
+    background-color: var(--color-secondary);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);
     height: 100%;
     width: 100%;
     border-radius: 1em;

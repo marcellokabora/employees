@@ -1,13 +1,16 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 :root {
-  --bg-contrast-low: #ecefec;
-  --bg-secondary: #ffffff;
-  --bg-primary: #30a46c;
+  --color-contrast: #ecefec;
+  --color-secondary: #ffffff;
+  --color-primary: #30a46c;
   --color-border: rgba(0, 0, 0, 0.1);
   --color-hover: #ddf3e4;
+  --color-gray: #6b716a;
 }
 
 body {
-  font-family: sans-serif;
+  font-family: "Inter", sans-serif;
   min-height: 100vh;
   margin: 0;
   font-size: 14px;
@@ -18,6 +21,7 @@ input {
   padding: 0px 1em;
   border: 1px solid silver;
   border-radius: 5px;
+  outline-color: var(--color-primary);
 }
 
 button {
@@ -26,8 +30,8 @@ button {
   border: none;
   cursor: pointer;
   &[type="submit"] {
-    background-color: var(--bg-primary);
-    color: var(--bg-secondary);
+    background-color: var(--color-primary);
+    color: var(--color-secondary);
     border-radius: 100px;
     padding: 0px 2em;
   }

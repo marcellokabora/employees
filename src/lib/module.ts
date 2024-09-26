@@ -1,7 +1,7 @@
 // export type Employee = { id: number; status: boolean };
 
 export type Employee = {
-  id: string;
+  id?: string;
   active?: boolean;
   appCode?: string;
   clientId?: string;

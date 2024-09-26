@@ -1,20 +1,26 @@
-import { getData } from "$lib/server/database";
-import type { Employee } from "$lib/module";
 import type { PageServerLoad } from "./$types";
+import * as db from "$lib/server/database";
 
 export const load: PageServerLoad = async () => {
-  const data = await getData();
-  console.log(data);
+  const data = await db.getData(); // Error Authorization !!
 
-  let employees: Employee[] = [];
-  for (let index = 0; index < 50; index++) {
-    employees = [
-      { id: Date.now().toString(), status: index % 2 == 0 ? "open" : "close" },
-      ...employees,
-    ];
-  }
   return {
-    employees,
-    total: 500,
+    employees: db.getFakeData(),
+    total: db.getTotalFakeData(),
   };
+};
+
+export const actions = {
+  add: async ({ request }) => {
+    await new Promise((fulfil) => setTimeout(fulfil, 1000));
+    const data = await request.formData();
+    db.addFakeData(Number(data.get("employees")));
+  },
+  more: async ({ request }) => {
+    await new Promise((fulfil) => setTimeout(fulfil, 1000));
+    const data = await request.formData();
+    const limit = data.get("limit");
+    const offset = data.get("offset");
+    db.addFakeData();
+  },
 };

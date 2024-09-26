@@ -1,42 +1,16 @@
 <script lang="ts">
   import Cart from "$lib/components/Cart.svelte";
-  import type { Employee } from "$lib/module";
   import { onMount } from "svelte";
   import type { PageServerData } from "./$types";
+  import { enhance } from "$app/forms";
 
   export let data: PageServerData;
 
-  let items: Employee[] = [];
-  let loading = true;
-  let pagination = 50;
-  let moreEmployees: number;
+  let loading = false;
+  let limit = 50;
+  let offset = 0;
   let listEmployees: any;
-
-  $: if (data) {
-    items = data.employees;
-    loading = false;
-  }
-
-  function showMore() {
-    if (data.total > pagination) {
-      pagination += 50;
-      loading = true;
-      setTimeout(function () {
-        let more: Employee[] = [];
-        for (let index = 0; index < 50; index++) {
-          more = [
-            {
-              id: Date.now().toString(),
-              status: index % 2 == 0 ? "open" : "close",
-            },
-            ...more,
-          ];
-        }
-        items = [...items, ...more];
-        loading = false;
-      }, 1000);
-    }
-  }
+  let formPagination: any;
 
   onMount(() => {
     if (listEmployees) {
@@ -45,30 +19,14 @@
           listEmployees.scrollTop + listEmployees.clientHeight >=
           listEmployees.scrollHeight
         ) {
-          showMore();
+          limit += 50;
+          setTimeout(function () {
+            formPagination.requestSubmit();
+          });
         }
       });
     }
   });
-
-  function addEmployee() {
-    data.total += moreEmployees;
-    items = [];
-    listEmployees.scrollIntoView(0);
-    listEmployees.scrollTop = 0;
-    pagination = 50;
-    let items1: Employee[] = [];
-    for (let index = 0; index < moreEmployees; index++) {
-      items1 = [
-        {
-          id: Date.now().toString(),
-          status: index % 2 == 0 ? "open" : "close",
-        },
-        ...items1,
-      ];
-    }
-    items = items1;
-  }
 </script>
 
 <svelte:head>
@@ -79,13 +37,22 @@
 <section>
   <Cart>
     <svelte:fragment slot="header">
-      <form on:submit|preventDefault={addEmployee}>
+      <form
+        method="POST"
+        action="?/add"
+        use:enhance={() => {
+          loading = true;
+          return async ({ update }) => {
+            await update();
+            loading = false;
+          };
+        }}
+      >
         <label>
           <span>Anzahl der Mitarbeiter die angelegt werden</span>
           <input
             disabled={loading}
-            name="description"
-            bind:value={moreEmployees}
+            name="employees"
             autocomplete="off"
             required
             placeholder=""
@@ -108,9 +75,9 @@
           </tr>
         </thead>
         <tbody>
-          {#each items as item, index}
+          {#each data.employees.employees as item, index}
             <tr class:isodd={index % 2}>
-              <td>{item.id}</td>
+              <td>{index}</td>
               <td>Abigayle</td>
               <td>Mills</td>
               <td>
@@ -123,6 +90,21 @@
           {/each}
         </tbody>
       </table>
+      <form
+        method="POST"
+        action="?/more"
+        bind:this={formPagination}
+        use:enhance={() => {
+          loading = true;
+          return async ({ update }) => {
+            await update();
+            loading = false;
+          };
+        }}
+      >
+        <input name="limit" bind:value={limit} />
+        <input name="offset" bind:value={offset} />
+      </form>
       {#if loading}
         <div class="imloading">
           <img src="/loading.svg" alt="loading" />
@@ -132,7 +114,7 @@
     <svelte:fragment slot="footer">
       <div class="footer">
         <span>
-          {pagination} geladen von {data.total}
+          {limit} geladen von {data.total}
           Ergebnissen
         </span>
         {#if loading}

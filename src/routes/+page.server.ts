@@ -1,7 +1,11 @@
+import { getData } from "$lib/server/database";
 import type { Employee } from "$lib/module";
-import type { PageLoad } from "./$types";
+import type { PageServerLoad } from "./$types";
 
-export const load: PageLoad = async () => {
+export const load: PageServerLoad = async () => {
+  const data = await getData();
+  console.log(data);
+
   let employees: Employee[] = [];
   for (let index = 0; index < 50; index++) {
     employees = [

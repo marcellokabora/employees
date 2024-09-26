@@ -2,9 +2,9 @@
   import Cart from "$lib/components/Cart.svelte";
   import type { Employee } from "$lib/module";
   import { onMount } from "svelte";
-  import type { PageData } from "./$types";
+  import type { PageServerData } from "./$types";
 
-  export let data: PageData;
+  export let data: PageServerData;
 
   let items: Employee[] = [];
   let loading = true;

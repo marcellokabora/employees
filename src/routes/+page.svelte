@@ -1,22 +1,35 @@
 <script lang="ts">
   import Cart from "$lib/components/Cart.svelte";
+  import type { Employee } from "$lib/module";
   import { onMount } from "svelte";
+  import type { PageData } from "./$types";
 
-  type Employe = { id: number; status: boolean };
+  export let data: PageData;
 
-  let items: Employe[] = [];
-  let loaded: Employe[] = [];
-  let loading = false;
-  let pagination = 0;
-  let addMore: number;
+  let items: Employee[] = [];
+  let loading = true;
+  let pagination = 50;
+  let moreEmployees: number;
   let listEmployees: any;
 
-  $: if (items) {
-    loading = true;
-    setTimeout(function () {
-      loaded = items.slice(0, pagination);
-      loading = false;
-    }, 1000);
+  $: if (data) {
+    items = data.employees;
+    loading = false;
+  }
+
+  function showMore() {
+    if (data.total > pagination) {
+      pagination += 50;
+      loading = true;
+      setTimeout(function () {
+        let more: Employee[] = [];
+        for (let index = 0; index < 50; index++) {
+          more = [{ id: Date.now(), status: index % 2 == 0 }, ...more];
+        }
+        items = [...items, ...more];
+        loading = false;
+      }, 1000);
+    }
   }
 
   onMount(() => {
@@ -26,19 +39,20 @@
           listEmployees.scrollTop + listEmployees.clientHeight >=
           listEmployees.scrollHeight
         ) {
-          pagination += 50;
+          showMore();
         }
       });
     }
   });
 
   function addEmployee() {
+    data.total += moreEmployees;
     items = [];
     listEmployees.scrollIntoView(0);
     listEmployees.scrollTop = 0;
     pagination = 50;
-    let items1: Employe[] = [];
-    for (let index = 0; index < addMore; index++) {
+    let items1: Employee[] = [];
+    for (let index = 0; index < moreEmployees; index++) {
       items1 = [{ id: Date.now(), status: index % 2 == 0 }, ...items1];
     }
     items = items1;
@@ -59,7 +73,7 @@
           <input
             disabled={loading}
             name="description"
-            bind:value={addMore}
+            bind:value={moreEmployees}
             autocomplete="off"
             required
             placeholder=""
@@ -82,7 +96,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each loaded as item, index}
+          {#each items as item, index}
             <tr class:isodd={index % 2}>
               <td>{index}</td>
               <td>Abigayle</td>
@@ -106,7 +120,7 @@
     <svelte:fragment slot="footer">
       <div class="footer">
         <span>
-          {pagination < items.length ? pagination : items.length} geladen von {items.length}
+          {pagination} geladen von {data.total}
           Ergebnissen
         </span>
         {#if loading}

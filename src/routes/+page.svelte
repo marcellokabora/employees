@@ -24,7 +24,13 @@
       setTimeout(function () {
         let more: Employee[] = [];
         for (let index = 0; index < 50; index++) {
-          more = [{ id: Date.now(), status: index % 2 == 0 }, ...more];
+          more = [
+            {
+              id: Date.now().toString(),
+              status: index % 2 == 0 ? "open" : "close",
+            },
+            ...more,
+          ];
         }
         items = [...items, ...more];
         loading = false;
@@ -53,7 +59,13 @@
     pagination = 50;
     let items1: Employee[] = [];
     for (let index = 0; index < moreEmployees; index++) {
-      items1 = [{ id: Date.now(), status: index % 2 == 0 }, ...items1];
+      items1 = [
+        {
+          id: Date.now().toString(),
+          status: index % 2 == 0 ? "open" : "close",
+        },
+        ...items1,
+      ];
     }
     items = items1;
   }
@@ -98,12 +110,12 @@
         <tbody>
           {#each items as item, index}
             <tr class:isodd={index % 2}>
-              <td>{index}</td>
+              <td>{item.id}</td>
               <td>Abigayle</td>
               <td>Mills</td>
               <td>
-                <span class="status" class:active={item.status}
-                  >{item.status ? "Aktiv" : "Inaktiv"}</span
+                <span class="status" class:open={item.status === "open"}
+                  >{item.status === "open" ? "Aktiv" : "Inaktiv"}</span
                 ></td
               >
               <td>August 7, 2017</td>
@@ -188,7 +200,7 @@
           color: #6b716a;
           font-weight: bold;
           font-size: 0.8em;
-          &.active {
+          &.open {
             background-color: #b4dfc4;
             color: #18794e;
           }

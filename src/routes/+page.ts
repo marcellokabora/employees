@@ -4,10 +4,13 @@ import type { PageLoad } from "./$types";
 export const load: PageLoad = async () => {
   let employees: Employee[] = [];
   for (let index = 0; index < 50; index++) {
-    employees = [{ id: Date.now(), status: index % 2 == 0 }, ...employees];
+    employees = [
+      { id: Date.now().toString(), status: index % 2 == 0 ? "open" : "close" },
+      ...employees,
+    ];
   }
   return {
     employees,
-    total: 100,
+    total: 500,
   };
 };

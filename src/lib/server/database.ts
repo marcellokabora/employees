@@ -14,11 +14,16 @@ const db = new Map();
 
 export async function getData() {
   try {
-    const response = await fetch(`${API}/employees?offset=${0}&limit=${50}`, {
-      method: "GET",
-      headers: headers,
-      // body: JSON.stringify({}),
-    });
+    const response = await fetch(
+      `${API}/employees?offset=${
+        db.get("doinstruct").employees.lenght
+      }&limit=${50}`,
+      {
+        method: "GET",
+        headers: headers,
+        // body: JSON.stringify({}),
+      }
+    );
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
@@ -34,7 +39,7 @@ export function getFakeData(pagination = 50) {
   if (!db.get("doinstruct")) {
     let employees: Employee[] = [];
     for (let index = 0; index < pagination; index++) {
-      employees = [{ status: index % 2 == 0 ? "open" : "close" }, ...employees];
+      employees = [addEmployee(), ...employees];
     }
     db.set("doinstruct", {
       employees: employees,
@@ -45,15 +50,30 @@ export function getFakeData(pagination = 50) {
 
 export function addFakeData(pagination = 50) {
   const data = db.get("doinstruct");
-
   for (let index = 0; index < pagination; index++) {
-    data.employees = [
-      { status: index % 2 == 0 ? "open" : "close" },
-      ...data.employees,
-    ];
+    data.employees = [addEmployee(), ...data.employees];
   }
+}
+
+export function createEmployees(total = 350) {
+  let rows: Employee[] = [];
+  for (let index = 0; index < total; index++) {
+    rows = [addEmployee(), ...rows];
+  }
+  // API /employees/bulk/import
+  // reset employees list
 }
 
 export function getTotalFakeData() {
   return 500;
+}
+
+function addEmployee(): Employee {
+  return {
+    active: Math.random() >= 0.5,
+    firstName: "Marcello",
+    lastName: "Annicchiarico",
+    language: "IT",
+    created: new Date().toDateString(),
+  };
 }

@@ -3,12 +3,14 @@
   import { onMount } from "svelte";
   import type { PageServerData } from "./$types";
   import { enhance } from "$app/forms";
+  import type { Employee } from "$lib/module";
 
   export let data: PageServerData;
 
+  let employees: Employee[] = [];
+  $: employees = data.employees.employees;
+
   let loading = false;
-  let limit = 50;
-  let offset = 0;
   let listEmployees: any;
   let formPagination: any;
 
@@ -19,10 +21,7 @@
           listEmployees.scrollTop + listEmployees.clientHeight >=
           listEmployees.scrollHeight
         ) {
-          limit += 50;
-          setTimeout(function () {
-            formPagination.requestSubmit();
-          });
+          formPagination.requestSubmit();
         }
       });
     }
@@ -52,7 +51,7 @@
           <span>Anzahl der Mitarbeiter die angelegt werden</span>
           <input
             disabled={loading}
-            name="employees"
+            name="total"
             autocomplete="off"
             required
             placeholder=""
@@ -75,17 +74,17 @@
           </tr>
         </thead>
         <tbody>
-          {#each data.employees.employees as item, index}
+          {#each employees as item, index}
             <tr class:isodd={index % 2}>
               <td>{index}</td>
-              <td>Abigayle</td>
-              <td>Mills</td>
+              <td>{item.firstName}</td>
+              <td>{item.lastName}</td>
               <td>
-                <span class="status" class:open={item.status === "open"}
-                  >{item.status === "open" ? "Aktiv" : "Inaktiv"}</span
+                <span class="status" class:active={item.active}
+                  >{item.active ? "Aktiv" : "Inaktiv"}</span
                 ></td
               >
-              <td>August 7, 2017</td>
+              <td>{item.created}</td>
             </tr>
           {/each}
         </tbody>
@@ -101,10 +100,7 @@
             loading = false;
           };
         }}
-      >
-        <input name="limit" bind:value={limit} />
-        <input name="offset" bind:value={offset} />
-      </form>
+      />
       {#if loading}
         <div class="imloading">
           <img src="/loading.svg" alt="loading" />
@@ -114,7 +110,7 @@
     <svelte:fragment slot="footer">
       <div class="footer">
         <span>
-          {limit} geladen von {data.total}
+          {employees.length} geladen von {data.total}
           Ergebnissen
         </span>
         {#if loading}
@@ -182,7 +178,7 @@
           color: #6b716a;
           font-weight: bold;
           font-size: 0.8em;
-          &.open {
+          &.active {
             background-color: #b4dfc4;
             color: #18794e;
           }

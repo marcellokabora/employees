@@ -2,7 +2,7 @@
 
 export type Employee = {
   id?: string;
-  active?: boolean;
+  active: boolean;
   appCode?: string;
   clientId?: string;
   created?: string;
@@ -11,9 +11,9 @@ export type Employee = {
   custom3?: string;
   employeeKey?: null;
   firstDay?: string;
-  firstName?: string;
-  language?: string;
-  lastName?: string;
+  firstName: string;
+  language: string;
+  lastName: string;
   latestReminder?: string;
   modified?: string;
   nextReminder?: string;
@@ -22,5 +22,4 @@ export type Employee = {
   phone?: string;
   privacyConfirmed?: boolean;
   rollout?: boolean;
-  status: string;
 };

@@ -1,7 +1,7 @@
 import type { PageServerLoad } from "./$types";
 import * as db from "$lib/server/database";
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ cookies }) => {
   const employees = await db.getEmployees();
   return {
     employees: employees ? employees : [],

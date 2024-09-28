@@ -3,16 +3,12 @@
   import { onMount } from "svelte";
   import type { PageServerData } from "./$types";
   import { enhance } from "$app/forms";
-  import type { Employee } from "$lib/module";
 
   export let data: PageServerData;
 
-  let employees: Employee[] = [];
   let loading = false;
   let listEmployees: any;
   let formPagination: any;
-
-  $: if (data.employees) employees = [...employees, ...data.employees];
 
   onMount(() => {
     if (listEmployees) {
@@ -20,7 +16,7 @@
         if (
           listEmployees.scrollTop + listEmployees.clientHeight >=
             listEmployees.scrollHeight &&
-          employees.length < data.total
+          data.employees.length < data.total
         ) {
           formPagination.requestSubmit();
         }
@@ -75,7 +71,7 @@
           </tr>
         </thead>
         <tbody>
-          {#each employees as item, index}
+          {#each data.employees as item, index}
             <tr class:isodd={index % 2}>
               <td>{item.id}</td>
               <td>{item.firstName}</td>
@@ -111,7 +107,7 @@
     <svelte:fragment slot="footer">
       <div class="footer">
         <span>
-          {employees.length} geladen von {data.total}
+          {data.employees.length} geladen von {data.total}
           Ergebnissen
         </span>
         {#if loading}

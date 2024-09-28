@@ -8,18 +8,19 @@
   export let data: PageServerData;
 
   let employees: Employee[] = [];
-  $: employees = data.employees.employees;
-
   let loading = false;
   let listEmployees: any;
   let formPagination: any;
+
+  $: if (data.employees) employees = [...employees, ...data.employees];
 
   onMount(() => {
     if (listEmployees) {
       listEmployees.addEventListener("scroll", function () {
         if (
           listEmployees.scrollTop + listEmployees.clientHeight >=
-          listEmployees.scrollHeight
+            listEmployees.scrollHeight &&
+          employees.length < data.total
         ) {
           formPagination.requestSubmit();
         }
@@ -56,7 +57,7 @@
             required
             placeholder=""
             type="number"
-            min="350"
+            min="1"
           />
         </label>
         <button type="submit">Mitarbeiter anlegen</button>
@@ -76,7 +77,7 @@
         <tbody>
           {#each employees as item, index}
             <tr class:isodd={index % 2}>
-              <td>{index}</td>
+              <td>{item.id}</td>
               <td>{item.firstName}</td>
               <td>{item.lastName}</td>
               <td>
@@ -84,7 +85,7 @@
                   >{item.active ? "Aktiv" : "Inaktiv"}</span
                 ></td
               >
-              <td>{item.created}</td>
+              <td>{new Date(String(item.created)).toDateString()}</td>
             </tr>
           {/each}
         </tbody>
@@ -102,7 +103,7 @@
         }}
       />
       {#if loading}
-        <div class="imloading">
+        <div class="loading">
           <img src="/loading.svg" alt="loading" />
         </div>
       {/if}
@@ -197,7 +198,7 @@
         }
       }
     }
-    .imloading {
+    .loading {
       position: absolute;
       inset: 0;
       filter: opacity(0.5);

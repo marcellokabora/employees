@@ -1,5 +1,3 @@
-// export type Employee = { id: number; status: boolean };
-
 export type Employee = {
   id?: string;
   active: boolean;

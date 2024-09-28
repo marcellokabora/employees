@@ -53,7 +53,7 @@
             required
             placeholder=""
             type="number"
-            min="1"
+            min="350"
           />
         </label>
         <button type="submit">Mitarbeiter anlegen</button>

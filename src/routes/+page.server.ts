@@ -15,6 +15,6 @@ export const actions = {
     db.postTotalEmployees(Number(data.get("total")));
   },
   more: async () => {
-    db.moreEmployees();
+    db.getEmployees();
   },
 };

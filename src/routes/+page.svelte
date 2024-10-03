@@ -15,8 +15,7 @@
       listEmployees.addEventListener("scroll", function () {
         if (
           listEmployees.scrollTop + listEmployees.clientHeight >=
-            listEmployees.scrollHeight &&
-          data.employees.length < data.total
+          listEmployees.scrollHeight
         ) {
           formPagination.requestSubmit();
         }
@@ -37,6 +36,7 @@
         method="POST"
         action="?/add"
         use:enhance={() => {
+          listEmployees.scrollTop = 0;
           loading = true;
           return async ({ update }) => {
             await update();
@@ -45,47 +45,53 @@
         }}
       >
         <label>
-          <span>Anzahl der Mitarbeiter die angelegt werden</span>
           <input
             disabled={loading}
-            name="total"
+            name="genre"
             autocomplete="off"
             required
-            placeholder=""
-            type="number"
-            min="350"
+            placeholder="Search for a gender"
+            type="text"
           />
         </label>
-        <button type="submit">Mitarbeiter anlegen</button>
+        <button type="submit">Submit</button>
       </form>
     </svelte:fragment>
     <svelte:fragment slot="body">
-      <table bind:this={listEmployees}>
-        <thead>
-          <tr>
-            <td>Personalnummer</td>
-            <td>Vorname</td>
-            <td>Nachname</td>
-            <td>Aktiv</td>
-            <td>Erstellt</td>
-          </tr>
-        </thead>
-        <tbody>
-          {#each data.employees as item, index}
-            <tr class:isodd={index % 2}>
-              <td>{item.id}</td>
-              <td>{item.firstName}</td>
-              <td>{item.lastName}</td>
-              <td>
-                <span class="status" class:active={item.active}
-                  >{item.active ? "Aktiv" : "Inaktiv"}</span
-                ></td
-              >
-              <td>{new Date(String(item.created)).toDateString()}</td>
+      <div class="tablo" bind:this={listEmployees}>
+        <table>
+          <thead>
+            <tr>
+              <td>Name</td>
+              <td>Surname</td>
+              <td>Gender</td>
+              <td>Location</td>
+              <td>Email</td>
+              <td>Phone</td>
+              <td>Active</td>
+              <td>Registered</td>
             </tr>
-          {/each}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {#each data.employees as item, index}
+              <tr class:isodd={index % 2}>
+                <td>{item.name.first}</td>
+                <td>{item.name.last}</td>
+                <td class="capitalize">{item.gender}</td>
+                <td>{item.location.city}</td>
+                <td>{item.email}</td>
+                <td>{item.phone}</td>
+                <td>
+                  <span class="status" class:active={item.nat === "US"}
+                    >{item.nat === "US" ? "Active" : "Inactive"}</span
+                  ></td
+                >
+                <td>{new Date(String(item.registered.date)).toDateString()}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
       <form
         method="POST"
         action="?/more"
@@ -107,8 +113,7 @@
     <svelte:fragment slot="footer">
       <div class="footer">
         <span>
-          {data.employees.length} geladen von {data.total}
-          Ergebnissen
+          {data.employees.length} Employees of 1000
         </span>
         {#if loading}
           <span>Loading...</span>
@@ -142,14 +147,14 @@
         }
       }
     }
-    table {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      border-collapse: collapse;
-      overflow: auto;
+    .tablo {
       position: absolute;
       inset: 0;
+      overflow: auto;
+      flex: 1;
+    }
+    table {
+      width: 100%;
       thead {
         position: sticky;
         top: 0;
@@ -184,12 +189,16 @@
       thead,
       tbody {
         tr {
-          display: table;
           width: 100%;
           border-bottom: 1px solid var(--color-border);
+          text-wrap: nowrap;
+          text-align: left;
           td {
             padding: 1em 1em;
-            width: 20%;
+            width: 150px;
+          }
+          .capitalize {
+            text-transform: capitalize;
           }
         }
       }

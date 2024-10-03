@@ -1,20 +1,20 @@
 import type { PageServerLoad } from "./$types";
 import * as db from "$lib/server/database";
 
-export const load: PageServerLoad = async ({ cookies }) => {
+export const load: PageServerLoad = async () => {
   const employees = await db.getEmployees();
   return {
     employees: employees ? employees : [],
-    total: 5000, // missing api call
   };
 };
 
 export const actions = {
   add: async ({ request }) => {
     const data = await request.formData();
-    db.postTotalEmployees(Number(data.get("total")));
+    const genre = String(data.get("genre"));
+    db.findGenre(genre);
   },
   more: async () => {
-    db.getEmployees();
+    db.addMore();
   },
 };

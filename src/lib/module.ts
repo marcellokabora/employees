@@ -1,5 +1,5 @@
 export type Employee = {
-  // id?: string;
+  firstName: string;
   // active: boolean;
   // appCode?: string;
   // clientId?: string;

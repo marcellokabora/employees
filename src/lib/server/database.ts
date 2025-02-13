@@ -1,31 +1,27 @@
-import type { Employee } from "$lib/module";
-const API = "https://randomuser.me/api/";
+import type { User } from "$lib/interfaces";
 
-const headers = new Headers({
-  "Content-Type": "application/json",
-});
-let gender: string = "";
-let employees: Employee[] = [];
+let search: string = "";
+let users: User[] = [];
+let skip = 0;
+const API = "https://dummyjson.com/users";
+const radio = 20;
 
-export async function getEmployees() {
+export async function getUsers() {
   try {
-    const response = await fetch(`${API}?results=50&gender=${gender}`, {
-      method: "GET",
-      headers: headers,
-    });
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    const data = await response.json();
-    console.log(employees.length);
-    return (employees = [...employees, ...data.results]);
+    const res = await fetch(`${API}?limit=${radio}&skip=${skip}`);
+    const data = await res.json();
+    users = data.users;
+    return users;
   } catch (error) {
     return null;
   }
 }
-export async function addMore() {}
+export async function addMore() {
+  skip += radio;
+  getUsers();
+}
 
-export async function findGenre(genre: string) {
-  employees = [];
-  gender = genre;
+export async function findUser(search: string) {
+  search = search;
+  getUsers();
 }

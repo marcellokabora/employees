@@ -1,16 +1,30 @@
+<script lang="ts">
+  import type { Snippet } from "svelte";
+
+  let {
+    header,
+    body,
+    footer,
+  }: {
+    header: Snippet;
+    body: Snippet;
+    footer: Snippet;
+  } = $props();
+</script>
+
 <div class="cart">
   <div class="header">
-    <slot name="header" />
+    {@render header?.()}
   </div>
   <div class="body">
-    <slot name="body" />
+    {@render body?.()}
   </div>
   <div class="footer">
-    <slot name="footer" />
+    {@render footer?.()}
   </div>
 </div>
 
-<style lang="scss">
+<style>
   .cart {
     background-color: var(--color-secondary);
     box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.1);

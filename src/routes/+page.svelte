@@ -1,22 +1,18 @@
 <script lang="ts">
   import Cart from "$lib/components/Cart.svelte";
   import { onMount } from "svelte";
-  import type { PageServerData } from "./$types";
   import { enhance } from "$app/forms";
 
-  export let data: PageServerData;
+  let { data } = $props();
 
-  let loading = false;
-  let listEmployees: any;
-  let formPagination: any;
+  let loading = $state(false);
+  let list: any = $state();
+  let formPagination: any = $state();
 
   onMount(() => {
-    if (listEmployees) {
-      listEmployees.addEventListener("scroll", function () {
-        if (
-          listEmployees.scrollTop + listEmployees.clientHeight >=
-          listEmployees.scrollHeight
-        ) {
+    if (list) {
+      list.addEventListener("scroll", function () {
+        if (list.scrollTop + list.clientHeight >= list.scrollHeight) {
           formPagination.requestSubmit();
         }
       });
@@ -31,12 +27,12 @@
 
 <section>
   <Cart>
-    <svelte:fragment slot="header">
+    {#snippet header()}
       <form
         method="POST"
         action="?/add"
         use:enhance={() => {
-          listEmployees.scrollTop = 0;
+          list.scrollTop = 0;
           loading = true;
           return async ({ update }) => {
             await update();
@@ -47,48 +43,48 @@
         <label>
           <input
             disabled={loading}
-            name="genre"
+            name="search"
             autocomplete="off"
             required
-            placeholder="Search for a gender"
+            placeholder="Search..."
             type="text"
           />
         </label>
         <button type="submit">Submit</button>
       </form>
-    </svelte:fragment>
-    <svelte:fragment slot="body">
-      <div class="tablo" bind:this={listEmployees}>
+    {/snippet}
+    {#snippet body()}
+      <div class="tablo" bind:this={list}>
         <table>
           <thead>
             <tr>
               <td>Name</td>
               <td>Surname</td>
               <td>Gender</td>
-              <td>Location</td>
-              <td>Email</td>
-              <td>Phone</td>
+              <td>Age</td>
+              <td>Usdername</td>
               <td>Active</td>
-              <td>Registered</td>
+              <td>Birth</td>
             </tr>
           </thead>
           <tbody>
-            {#each data.employees as item, index}
-              <tr class:isodd={index % 2}>
-                <td>{item.name.first}</td>
-                <td>{item.name.last}</td>
-                <td class="capitalize">{item.gender}</td>
-                <td>{item.location.city}</td>
-                <td>{item.email}</td>
-                <td>{item.phone}</td>
-                <td>
-                  <span class="status" class:active={item.nat === "US"}
-                    >{item.nat === "US" ? "Active" : "Inactive"}</span
-                  ></td
-                >
-                <td>{new Date(String(item.registered.date)).toDateString()}</td>
-              </tr>
-            {/each}
+            {#if data.users}
+              {#each data?.users as item, index}
+                <tr class:isodd={index % 2}>
+                  <td>{item.firstName}</td>
+                  <td>{item.lastName}</td>
+                  <td class="capitalize">{item.gender}</td>
+                  <td>{item.age}</td>
+                  <td>{item.username}</td>
+                  <td>
+                    <span class="status" class:active={index % 2}
+                      >{index % 2 ? "Active" : "Inactive"}</span
+                    ></td
+                  >
+                  <td>{new Date(String(item.birthDate)).toDateString()}</td>
+                </tr>
+              {/each}
+            {/if}
           </tbody>
         </table>
       </div>
@@ -103,27 +99,27 @@
             loading = false;
           };
         }}
-      />
-      {#if loading}
+      ></form>
+      <!-- {#if loading}
         <div class="loading">
           <img src="/loading.svg" alt="loading" />
         </div>
-      {/if}
-    </svelte:fragment>
-    <svelte:fragment slot="footer">
+      {/if} -->
+    {/snippet}
+    {#snippet footer()}
       <div class="footer">
         <span>
-          {data.employees.length} Employees of 1000
+          {data.users?.length} Employees of 1000
         </span>
         {#if loading}
           <span>Loading...</span>
         {/if}
       </div>
-    </svelte:fragment>
+    {/snippet}
   </Cart>
 </section>
 
-<style lang="scss">
+<style>
   section {
     position: absolute;
     inset: 0;
@@ -140,11 +136,11 @@
         display: flex;
         flex-direction: column;
         gap: 0.5em;
-        span {
+        /* span {
           padding-right: 1em;
           font-size: 0.8em;
           color: var(--color-gray);
-        }
+        } */
       }
     }
     .tablo {
@@ -203,7 +199,7 @@
         }
       }
     }
-    .loading {
+    /* .loading {
       position: absolute;
       inset: 0;
       filter: opacity(0.5);
@@ -214,7 +210,7 @@
       img {
         height: 50px;
       }
-    }
+    } */
     .footer {
       display: flex;
       align-items: center;
